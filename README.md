@@ -1,3 +1,13 @@
+# Nama : Julio Sandra
+# NIM : 2457201018
+# Kelas : SI4M
+# Mata Kuliah : Pemrograman Beroriestasi Object
+# Member project : budisandif@gmail.com
+
+
+
+
+
 # Sistem Informasi E-Commerce Produk OT (Orang Tua) 1948
 
 Proyek aplikasi berbasis web **ASP.NET Core 8 MVC** dengan basis data **PostgreSQL** yang dikembangkan sebagai proyek akhir / Ujian Akhir Semester (UAS). Sistem ini menerapkan pola arsitektur MVC (*Model-View-Controller*), pengelolaan logika keranjang belanja dan riwayat kunjungan menggunakan struktur data kustom (*Double Linked List*), serta alur transaksi pembayaran mandiri dari tahap pemesanan hingga pencetakan struk bukti transaksi. Seluruh kode ditulis dalam standar *Clean Code* tanpa komentar sintaks.
