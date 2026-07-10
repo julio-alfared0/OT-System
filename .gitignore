@@ -1,0 +1,15 @@
+bin/
+obj/
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.sqlite
+*.db
+*.db-shm
+*.db-wal
+.DS_Store
+Thumbs.db
+appsettings.Development.json
+*.log

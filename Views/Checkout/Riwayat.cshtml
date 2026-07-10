@@ -1,0 +1,129 @@
+@model IEnumerable<OT.Models.Pesanan>
+@{
+    ViewData["Title"] = "Riwayat Pembelian & Struk Resmi - Warisan 1948";
+}
+
+<div class="container py-5" style="margin-top: 80px;">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-5 pb-4 border-bottom border-secondary border-opacity-25 scroll-reveal">
+        <div>
+            <span class="badge rounded-pill mb-2 px-3 py-1 font-monospace tracking-widest text-uppercase d-inline-flex align-items-center gap-1" style="background: rgba(212, 175, 55, 0.15); color: var(--gold); border: 1px solid rgba(212, 175, 55, 0.3);">
+                <i class="ph ph-receipt me-1"></i> ARSIP TRANSAKSI
+            </span>
+            <h1 class="fw-bolder tracking-tight mb-1 text-main">Riwayat Pesanan Saya</h1>
+            <p class="text-muted small mb-0">Semua riwayat pembelian produk mahakarya OT 1948 Anda tersimpan aman dan dapat dicetak struknya kapan saja.</p>
+        </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2">
+            <a asp-controller="Beranda" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 py-2 text-main d-flex align-items-center gap-2" style="border-color: var(--border-subtle);">
+                <i class="ph ph-storefront"></i> Belanja Lagi
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card p-5 border-0 rounded-5 bg-surface text-center scroll-reveal shadow-sm" style="border: 1px solid var(--border-subtle) !important;">
+            <div class="mb-4">
+                <i class="ph ph-receipt-x text-muted" style="font-size: 5rem; opacity: 0.5;"></i>
+            </div>
+            <h4 class="fw-bolder tracking-tight text-main mb-2">Belum Ada Riwayat Pembelian</h4>
+            <p class="text-muted small mb-4 mx-auto" style="max-width: 400px;">
+                Anda belum melakukan transaksi produk atau koleksi warisan apapun. Mulailah mengoleksi mahakarya eksklusif sekarang.
+            </p>
+            <div>
+                <a asp-controller="Beranda" asp-action="Katalog" class="btn btn-gold rounded-pill px-5 py-3 fw-bold tracking-wider shadow">
+                    Jelajahi Katalog Warisan
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column gap-4 scroll-reveal">
+            @foreach (var item in Model)
+            {
+                var isLunas = item.StatusPembayaran == "Lunas";
+                var badgeBg = isLunas ? "bg-success bg-opacity-25 text-success" : "bg-warning bg-opacity-25 text-warning";
+                var badgeIcon = isLunas ? "ph-check-circle" : "ph-clock-countdown";
+
+                <div class="card p-4 p-md-5 border-0 rounded-4 bg-surface shadow-sm transition-hover" style="border: 1px solid var(--border-subtle) !important;">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 pb-4 mb-4 border-bottom border-secondary border-opacity-25">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="font-monospace text-gold fw-bold tracking-tight">@item.NomorSeriTransaksi</span>
+                                <span class="badge rounded-pill @badgeBg px-3 py-1 font-monospace small d-inline-flex align-items-center gap-1">
+                                    <i class="ph @badgeIcon"></i> @item.StatusPembayaran
+                                </span>
+                            </div>
+                            <span class="text-muted small d-block">
+                                <i class="ph ph-calendar-blank me-1"></i> @item.TanggalPesanan.ToLocalTime().ToString("dd MMMM yyyy, HH:mm") WIB &bull; Metode: <strong>@item.MetodePembayaran</strong>
+                            </span>
+                        </div>
+                        <div class="text-md-end">
+                            <span class="text-muted small d-block">Total Nilai Investasi</span>
+                            <span class="fw-bolder font-monospace text-gold fs-4">
+                                @item.TotalHarga.ToString("C", new System.Globalization.CultureInfo("id-ID"))
+                            </span>
+                            @if (isLunas)
+                            {
+                                <span class="badge bg-gold text-dark small mt-1 d-inline-block fw-bold">+@item.PoinDiperoleh Poin Diperoleh</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <span class="text-uppercase tracking-wider small text-muted fw-bold d-block mb-3">Item Yang Dipesan:</span>
+                        @if (item.DetailPesanan != null && item.DetailPesanan.Any())
+                        {
+                            <div class="row g-3">
+                                @foreach (var detail in item.DetailPesanan)
+                                {
+                                    var subtotal = detail.HargaSatuan * detail.Kuantitas;
+                                    var gambar = detail.Produk?.JalurGambar ?? "/assets/webp/mazemaze.webp";
+                                    if (gambar.StartsWith("/assets/image/"))
+                                    {
+                                        gambar = gambar.Replace("/assets/image/", "/assets/webp/");
+                                    }
+                                    if (!gambar.EndsWith(".webp", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        gambar = "/assets/webp/mazemaze.webp";
+                                    }
+
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center gap-3 p-3 rounded-3 item-card border border-secondary border-opacity-25">
+                                            <img src="@gambar" alt="@detail.Produk?.NamaProduk" class="rounded-2 object-fit-cover" style="width: 56px; height: 56px;" onerror="this.src='/assets/webp/mazemaze.webp';" />
+                                            <div class="flex-grow-1 overflow-hidden">
+                                                <span class="fw-bold text-main d-block text-truncate small">@(detail.Produk?.NamaProduk ?? "Mahakarya OT")</span>
+                                                <span class="text-muted small d-block" style="font-size: 0.78rem;">
+                                                    @detail.Kuantitas x @detail.HargaSatuan.ToString("C", new System.Globalization.CultureInfo("id-ID"))
+                                                </span>
+                                            </div>
+                                            <span class="fw-bold font-monospace text-gold small">
+                                                @subtotal.ToString("C", new System.Globalization.CultureInfo("id-ID"))
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted small fst-italic">Detail item tersimpan dalam arsip sistem.</span>
+                        }
+                    </div>
+
+                    <div class="d-flex flex-wrap justify-content-end gap-2 pt-3 border-top border-secondary border-opacity-25">
+                        @if (!isLunas)
+                        {
+                            <a asp-controller="Checkout" asp-action="Qris" asp-route-pesananId="@item.Id" class="btn btn-gold rounded-pill px-4 py-2 small fw-bold d-inline-flex align-items-center gap-2 shadow-sm">
+                                <i class="ph ph-qr-code fs-5"></i> Lanjutkan Pembayaran QRIS
+                            </a>
+                        }
+                        <a asp-controller="Checkout" asp-action="Struk" asp-route-pesananId="@item.Id" class="btn @(isLunas ? "btn-gold" : "btn-outline-secondary") rounded-pill px-4 py-2 small fw-bold text-main d-inline-flex align-items-center gap-2 shadow-sm" style="border-color: @(isLunas ? "transparent" : "var(--border-subtle)");">
+                            <i class="ph ph-printer fs-5"></i> Cetak Struk Resmi
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

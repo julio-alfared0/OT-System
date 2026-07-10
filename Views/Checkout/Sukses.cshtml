@@ -1,0 +1,63 @@
+@model OT.Models.Pesanan
+@{
+    ViewData["Title"] = "Pembayaran Berhasil - Warisan 1948";
+}
+
+<div class="container py-5" style="margin-top: 80px;">
+    <div class="row justify-content-center scroll-reveal">
+        <div class="col-lg-6 col-md-8">
+            <div class="card p-4 p-md-5 border-0 rounded-4 bg-surface shadow-lg text-center" style="border-radius: 24px; border: 1px solid var(--gold-glow) !important;">
+                <div class="mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle p-4 mb-3 shadow" style="background: rgba(40, 167, 69, 0.15); border: 2px solid #28a745;">
+                        <i class="ph ph-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                    </div>
+                    <span class="badge rounded-pill bg-success bg-opacity-25 text-success px-3 py-2 font-monospace tracking-widest text-uppercase d-block mx-auto mb-2" style="width: fit-content;">
+                        <i class="ph ph-seal-check me-1"></i> QRIS TERVERIFIKASI
+                    </span>
+                    <h2 class="fw-bolder tracking-tight mb-2 text-main">Pembayaran Berhasil!</h2>
+                    <p class="text-muted small">
+                        Terima kasih atas kepercayaan Anda. Mahakarya OT 1948 telah tercatat dalam sistem dengan jaminan keaslian sejati.
+                    </p>
+                </div>
+
+                                <div class="p-4 rounded-4 bg-dark border border-secondary border-opacity-25 mb-4 text-start small">
+                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary border-opacity-25">
+                        <span class="text-muted">Nomor Seri Transaksi</span>
+                        <span class="font-monospace text-gold fw-bold">@Model.NomorSeriTransaksi</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Metode Pembayaran</span>
+                        <span class="text-white fw-semibold">QRIS Instant (@Model.StatusPembayaran)</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Total Dibayarkan</span>
+                        <span class="text-gold fw-bold font-monospace fs-6">
+                            @Model.TotalHarga.ToString("C", new System.Globalization.CultureInfo("id-ID"))
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary border-opacity-25">
+                        <span class="text-muted d-flex align-items-center gap-1">
+                            <i class="ph ph-star-fill text-gold"></i> Poin Loyalitas Diperoleh
+                        </span>
+                        <span class="badge bg-gold text-dark fw-bold px-2 py-1">+@Model.PoinDiperoleh Poin</span>
+                    </div>
+                </div>
+
+                                <div class="d-flex flex-column flex-sm-row gap-3">
+                    <a asp-controller="Checkout" asp-action="Struk" asp-route-pesananId="@Model.Id" class="btn btn-gold flex-grow-1 py-3 rounded-pill fw-bold text-uppercase tracking-wider shadow d-flex align-items-center justify-content-center gap-2">
+                        <i class="ph ph-printer fs-5"></i>
+                        <span>Lihat & Cetak Struk</span>
+                    </a>
+                    <a asp-controller="Checkout" asp-action="Riwayat" class="btn btn-outline-secondary flex-grow-1 py-3 rounded-pill fw-semibold text-main d-flex align-items-center justify-content-center gap-2" style="border-color: var(--border-subtle);">
+                        <i class="ph ph-clock-counter-clockwise fs-5"></i>
+                        <span>History Pembelian</span>
+                    </a>
+                </div>
+
+                <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 text-muted small">
+                    Struk transaksi resmi juga tersimpan secara permanen dalam riwayat akun Anda.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

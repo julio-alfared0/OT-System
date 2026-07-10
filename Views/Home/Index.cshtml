@@ -1,0 +1,95 @@
+@model OT.Resources.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "Beranda";
+}
+
+<section class="hero-section" id="beranda">
+    <div class="hero-bg-glow"></div>
+    <div class="hero-content">
+        <span class="hero-badge gsap-fade">SEJAK 1948</span>
+        <h1 class="hero-title gsap-hero">
+            Mahakarya<br/>
+            <span class="hero-title-accent">Distilasi.</span>
+        </h1>
+        <p class="hero-subtitle gsap-hero">
+            Setiap tetes adalah perjalanan rasa yang diracik dengan presisi,<br class="d-none d-md-block"/>
+            dedikasi, dan warisan yang tak lekang oleh waktu.
+        </p>
+        <div class="hero-cta gsap-hero">
+            <a href="#eksplorasi" class="btn-primary-custom">Jelajahi Koleksi</a>
+            <a href="#tentang" class="btn-ghost-custom">Pelajari Lebih Lanjut</a>
+        </div>
+    </div>
+    <div class="hero-scroll-indicator gsap-fade">
+        <div class="scroll-line"></div>
+        <span>Scroll</span>
+    </div>
+</section>
+
+<section class="section-block" id="eksplorasi">
+    <div class="section-header gsap-section">
+        <span class="section-label">Koleksi Premium</span>
+        <h2 class="section-title">Eksplorasi Kami</h2>
+        <p class="section-desc">Pilihan terbaik dari varian anggur dan spirit kelas dunia untuk setiap momen istimewa Anda.</p>
+    </div>
+
+    <div class="bento-grid">
+        @{ int index = 0; }
+        @foreach (var product in Model.Products)
+        {
+            string sizeClass = (index == 0 || index == 3) ? "bento-card-lg" : "bento-card-sm";
+            <a href="/Product/Detail/@product.Id" class="bento-card @sizeClass gsap-bento">
+                <div class="card-image-wrapper">
+                    <img src="@product.ImageUrl"
+                         alt="@product.Name"
+                         class="product-image gsap-parallax"
+                         loading="lazy" />
+                </div>
+                <div class="card-overlay">
+                    <span class="card-category">@product.CategoryName</span>
+                    <h3 class="card-name">@product.Name</h3>
+                    <div class="card-price">Rp @product.Price.ToString("N0")</div>
+                </div>
+                <div class="card-shine"></div>
+            </a>
+            index++;
+        }
+    </div>
+</section>
+
+<section class="section-block section-about" id="tentang">
+    <div class="about-container">
+        <div class="about-visual gsap-section">
+            <img src="/assets/logo/OT1948.webp" alt="OT Heritage" class="about-image" />
+            <div class="about-image-glow"></div>
+        </div>
+        <div class="about-content gsap-section">
+            <span class="section-label">Warisan Kami</span>
+            <h2 class="section-title">Tentang OT</h2>
+            <p class="about-text">
+                Berdiri sejak tahun 1948, Orang Tua Group telah menjadi salah satu pilar industri minuman di Indonesia.
+                Dengan pengalaman lebih dari tujuh dekade, kami menggabungkan tradisi peracikan klasik dengan teknologi
+                distilasi modern untuk menghadirkan produk-produk berkualitas internasional.
+            </p>
+            <p class="about-text">
+                Setiap produk kami melewati proses kurasi ketat — mulai dari pemilihan bahan baku terbaik hingga
+                fermentasi dan distilasi yang presisi — demi memastikan konsistensi rasa dan kualitas premium
+                yang telah dipercaya selama puluhan tahun.
+            </p>
+            <div class="about-stats">
+                <div class="stat-item gsap-stat">
+                    <span class="stat-number">75+</span>
+                    <span class="stat-label">Tahun Berdiri</span>
+                </div>
+                <div class="stat-item gsap-stat">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Varian Produk</span>
+                </div>
+                <div class="stat-item gsap-stat">
+                    <span class="stat-number">30+</span>
+                    <span class="stat-label">Negara Ekspor</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

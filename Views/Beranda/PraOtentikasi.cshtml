@@ -1,0 +1,73 @@
+@{
+    ViewData["Title"] = "Selamat Datang di Warisan 1948";
+}
+
+<div class="hero-section overflow-hidden position-relative">
+        <div class="position-absolute inset-0 w-100 h-100">
+        <div class="gsap-hero-bg w-100 h-100" style="background-image: url('/assets/image/manta-.webp'); background-size: cover; background-position: center; filter: brightness(0.6) contrast(1.1) saturate(1.2); transform: scale(1.1);"></div>
+    </div>
+    
+        <div class="position-absolute inset-0 w-100 h-100" style="background: radial-gradient(circle at center, transparent 0%, var(--bg-main) 100%), linear-gradient(180deg, rgba(0,0,0,0.3) 0%, var(--bg-main) 100%); z-index: 5;"></div>
+
+    <div class="container position-relative text-center d-flex flex-column justify-content-center align-items-center h-100" style="z-index: 10;">
+        <div class="gsap-hero-content max-w-lg mx-auto">
+            <div class="d-flex justify-content-center mb-4">
+                <span class="badge px-4 py-2 rounded-pill font-monospace small tracking-widest text-uppercase d-flex align-items-center gap-2 shadow-sm" style="background: var(--surface); color: var(--gold); border: 1px solid var(--gold-glow); backdrop-filter: blur(10px);">
+                    <i class="ph ph-crown fs-5"></i> Mahakarya Nusantara Sejak 1948
+                </span>
+            </div>
+            
+            <h1 class="fw-bolder mb-3 tracking-tight text-main" style="font-size: clamp(3rem, 8vw, 6rem); line-height: 1;">
+                Seni.<br />
+                <span style="color: var(--gold);">Kualitas.</span><br />
+                Tradisi.
+            </h1>
+            
+            <p class="lead text-muted mb-5 mx-auto fw-medium" style="max-width: 650px; font-size: clamp(1.1rem, 2vw, 1.35rem); line-height: 1.7;">
+                Menjaga resep rahasia warisan leluhur demi mempersembahkan cita rasa taktil berkelas dunia. Nikmati kemewahan dalam setiap tetesnya.
+            </p>
+            
+            <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                <a asp-controller="Otentikasi" asp-action="Masuk" class="btn btn-gold btn-lg rounded-pill px-5 py-3 text-uppercase tracking-wider fs-6 shadow-lg d-inline-flex align-items-center justify-content-center gap-2" style="color: #000 !important; font-weight: 700;">
+                    <i class="ph ph-fingerprint fs-4"></i> Masuk Sistem
+                </a>
+                <a asp-controller="Otentikasi" asp-action="Daftar" class="btn btn-lg rounded-pill px-5 py-3 text-uppercase tracking-wider fs-6 shadow-sm d-inline-flex align-items-center justify-content-center gap-2 text-main" style="background: var(--surface); border: 1px solid var(--border-subtle); font-weight: 600;">
+                    <i class="ph ph-user-plus fs-4"></i> Daftar Baru
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            if (typeof gsap !== 'undefined') {
+                gsap.to(".gsap-hero-bg", {
+                    scale: 1,
+                    duration: 1.5,
+                    ease: "cubic-bezier(0.16, 1, 0.3, 1)"
+                });
+                
+                gsap.from(".gsap-hero-content", {
+                    y: 40,
+                    opacity: 0,
+                    duration: 1.2,
+                    ease: "cubic-bezier(0.16, 1, 0.3, 1)",
+                    delay: 0.2
+                });
+                
+                document.addEventListener("mousemove", (e) => {
+                    const x = (window.innerWidth / 2 - e.pageX) / 50;
+                    const y = (window.innerHeight / 2 - e.pageY) / 50;
+                    gsap.to(".gsap-hero-bg", {
+                        x: x,
+                        y: y,
+                        duration: 1,
+                        ease: "power2.out"
+                    });
+                });
+            }
+        });
+    </script>
+}

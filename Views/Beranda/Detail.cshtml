@@ -1,0 +1,143 @@
+@model OT.Models.Produk
+@{
+    ViewData["Title"] = Model.NamaProduk;
+}
+
+<div class="container" style="padding-top: 100px; padding-bottom: 60px;">
+    
+    <div class="mb-4">
+        <a asp-action="Index" class="text-white-50 text-decoration-none d-inline-flex align-items-center gap-2">
+            <i class="ph ph-arrow-left fs-5"></i> Kembali ke Katalog
+        </a>
+    </div>
+
+    <div class="row g-5 align-items-center">
+                <div class="col-12 col-lg-5">
+            <div class="card bg-transparent border-0 rounded-4 overflow-hidden" style="background: rgba(255,255,255,0.03) !important; border: 1px solid rgba(255,255,255,0.05) !important;">
+                <div class="d-flex justify-content-center align-items-center p-5" style="height: 500px;">
+                    <img src="@(Model.JalurGambar?.Replace("/assets/image/", "/assets/webp/").Replace("/OT-Product/webp/", "/assets/webp/"))" alt="@Model.NamaProduk" class="img-fluid" style="max-height: 100%; object-fit: contain;">
+                </div>
+            </div>
+        </div>
+
+                <div class="col-12 col-lg-7">
+            <span class="badge mb-2" style="background-color: var(--accent-gold); color: #000;">
+                @Model.Kategori?.NamaKategori
+            </span>
+            <h1 class="display-5 fw-bold text-white mb-2">@Model.NamaProduk</h1>
+            <p class="text-white-50 mb-4 font-monospace small">SKU: @Model.KodeSKU</p>
+            
+            <h2 class="fw-bold mb-4" style="color: var(--accent-gold);">Rp @Model.Harga.ToString("N0")</h2>
+            
+            <p class="fs-5 text-light mb-4" style="line-height: 1.6;">
+                @Model.Deskripsi
+            </p>
+
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-4">
+                    <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.05);">
+                        <small class="text-white-50 d-block mb-1">Kadar Alkohol</small>
+                        <span class="fs-5 fw-bold text-white">@Model.PersentaseAlkohol%</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.05);">
+                        <small class="text-white-50 d-block mb-1">Volume Bersih</small>
+                        <span class="fs-5 fw-bold text-white">@Model.VolumeML ML</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.05);">
+                        <small class="text-white-50 d-block mb-1">Stok Tersedia</small>
+                        <span class="fs-5 fw-bold text-white">@Model.Stok Botol</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-3 align-items-center">
+                <button class="btn btn-gold btn-lg rounded-pill px-5 fw-bold btn-tambah-keranjang d-flex align-items-center gap-2" data-id="@Model.Id">
+                    <i class="ph ph-shopping-cart-plus fs-5"></i> Tambah ke Keranjang
+                </button>
+                <div class="text-gold small d-flex align-items-center gap-1">
+                    <i class="ph ph-star-fill fs-6"></i> +@Model.ImbalanPoin Poin Loyalitas
+                </div>
+            </div>
+        </div>
+    </div>
+
+        @if (ViewBag.ProdukRiwayat != null)
+    {
+        var riwayat = ViewBag.ProdukRiwayat as IEnumerable<OT.Models.Produk>;
+        if (riwayat != null && riwayat.Any())
+        {
+            <div class="mt-5 pt-5 border-top border-secondary">
+                <h4 class="mb-4 fw-bold text-white d-flex align-items-center gap-2">
+                    <i class="ph ph-clock-counter-clockwise fs-5 text-gold"></i> Terakhir Anda Lihat
+                </h4>
+                <div class="row g-4">
+                    @foreach(var item in riwayat)
+                    {
+                        <div class="col-6 col-md-3">
+                            <a asp-action="Detail" asp-route-id="@item.Id" class="text-decoration-none">
+                                <div class="card bg-dark text-white border-0 rounded-4 overflow-hidden h-100" style="background: rgba(255,255,255,0.05) !important; transition: transform 0.3s ease;">
+                                    <div class="p-4 d-flex justify-content-center align-items-center" style="height: 200px;">
+                                        <img src="@(item.JalurGambar?.Replace("/assets/image/", "/assets/webp/").Replace("/OT-Product/webp/", "/assets/webp/"))" alt="@item.NamaProduk" class="img-fluid" style="max-height: 100%; object-fit: contain;">
+                                    </div>
+                                    <div class="card-body p-3 text-center border-top border-secondary">
+                                        <h6 class="fw-bold mb-1 text-white">@item.NamaProduk</h6>
+                                        <small class="text-gold">Rp @item.Harga.ToString("N0")</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.btn-tambah-keranjang').click(function(e) {
+                e.preventDefault(); 
+                
+                var btn = $(this);
+                var produkId = btn.data('id');
+                var originalHtml = btn.html();
+                
+                btn.html('<i class="ph ph-spinner ph-spin me-2"></i> Menambahkan...');
+                btn.prop('disabled', true);
+                
+                $.post('/Keranjang/Tambah', { produkId: produkId }, function(response) {
+                    if (response.sukses) {
+                        btn.html('<i class="ph ph-check text-success me-2"></i> Berhasil!');
+                        
+                        if (typeof window.updateCartBadge === 'function') {
+                            window.updateCartBadge();
+                        } else {
+                            var badge = $('#cart-badge');
+                            var current = parseInt(badge.text());
+                            if (isNaN(current)) current = 0;
+                            badge.text(current + 1);
+                        }
+                        
+                        setTimeout(function() {
+                            btn.html(originalHtml);
+                            btn.prop('disabled', false);
+                        }, 2000);
+                    } else {
+                        alert(response.pesan);
+                        btn.html(originalHtml);
+                        btn.prop('disabled', false);
+                    }
+                }).fail(function() {
+                    alert("Terjadi kesalahan sistem, silakan coba lagi.");
+                    btn.html(originalHtml);
+                    btn.prop('disabled', false);
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,231 @@
+@using System.Security.Claims
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Warisan 1948</title>
+        <link rel="icon" type="image/webp" href="/assets/logo/OT-Logo.webp" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+        <script src="https://unpkg.com/@@phosphor-icons/web@2.1.1"></script>
+        <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top glass-nav">
+        <div class="container d-flex justify-content-between align-items-center">
+                        <a class="navbar-brand d-flex align-items-center gap-2" asp-area="" asp-controller="Beranda" asp-action="Index">
+                <img src="/assets/logo/OT-Logo.webp" alt="OT Logo" class="nav-logo" style="filter: invert(1);" id="brandLogo" />
+                <span class="fw-bolder tracking-tight text-main" style="font-size: 1.25rem;">Warisan 1948</span>
+            </a>
+            
+            <button class="navbar-toggler navbar-dark border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                                <ul class="navbar-nav mx-auto align-items-center gap-1">
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link px-3 text-main fw-medium" asp-controller="Beranda" asp-action="Index">Beranda</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 text-main fw-medium" asp-controller="Beranda" asp-action="Katalog">Koleksi</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 text-main fw-medium" asp-controller="Beranda" asp-action="Warisan">Warisan</a>
+                        </li>
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link px-3 text-main fw-medium" asp-controller="Checkout" asp-action="Riwayat">Riwayat</a>
+                            </li>
+                        }
+                    }
+                </ul>
+
+                                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <button type="button" class="btn btn-cmd-trigger d-flex align-items-center gap-2 px-3 py-2 rounded-pill" id="open-cmd-palette" title="Buka Command Palette">
+                                <i class="ph ph-magnifying-glass fs-5"></i>
+                                <span class="small d-none d-xl-inline">Cari Mahakarya...</span>
+                                <kbd id="cmd-badge" class="badge-cmd">Ctrl + K</kbd>
+                            </button>
+                        </li>
+                        @if (!User.IsInRole("Admin") && !User.HasClaim(ClaimTypes.Role, "Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link px-2 d-flex align-items-center position-relative text-main" asp-controller="Checkout" asp-action="Index" title="Keranjang Belanja">
+                                    <i class="ph ph-shopping-bag fs-4"></i>
+                                    <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle small" id="cart-badge">0</span>
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item dropdown ms-2">
+                            <a class="nav-link d-flex align-items-center gap-2 dropdown-toggle text-main text-decoration-none" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="d-flex align-items-center justify-content-center rounded-circle bg-dark border border-secondary text-gold fw-bold small" style="width: 36px; height: 36px;">
+                                    @(string.IsNullOrEmpty(User.Identity.Name) ? "OT" : User.Identity.Name.Substring(0, Math.Min(2, User.Identity.Name.Length)).ToUpper())
+                                </div>
+                                <span class="small fw-medium d-none d-lg-inline">@User.Identity.Name</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark bg-surface border border-secondary shadow-lg rounded-4 p-2" aria-labelledby="userDropdown">
+                                @if (!User.IsInRole("Admin") && !User.HasClaim(ClaimTypes.Role, "Admin"))
+                                {
+                                    <li>
+                                        <a class="dropdown-item rounded-3 small py-2 d-flex align-items-center gap-2" asp-controller="Checkout" asp-action="Riwayat">
+                                            <i class="ph ph-receipt"></i> Riwayat Pesanan
+                                        </a>
+                                    </li>
+                                }
+                                <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                                <li>
+                                    <form asp-controller="Otentikasi" asp-action="Keluar" method="post" class="d-inline w-100">
+                                        <button type="submit" class="dropdown-item rounded-3 small py-2 text-danger d-flex align-items-center gap-2 w-100 border-0 bg-transparent">
+                                            <i class="ph ph-sign-out"></i> Keluar Sesi
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a asp-controller="Otentikasi" asp-action="Masuk" class="btn btn-gold rounded-pill px-4 py-2 d-flex align-items-center gap-2 small fw-bold text-decoration-none shadow-sm text-dark">
+                                <i class="ph ph-user"></i> Masuk / Daftar
+                            </a>
+                        </li>
+                    }
+                    
+                                        <li class="nav-item ms-2">
+                        <button id="themeToggle" class="btn btn-link text-main p-2 text-decoration-none d-flex align-items-center justify-content-center rounded-circle" style="background: rgba(128,128,128,0.1); width: 40px; height: 40px;" title="Ganti Tema">
+                            <i class="ph ph-moon-stars fs-5" id="themeIcon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content" role="main">
+        @RenderBody()
+    </main>
+
+        <div id="command-palette" class="command-palette-backdrop">
+        <div class="command-palette-card">
+            <div class="d-flex align-items-center justify-content-between border-bottom border-surface px-4 py-3 position-relative">
+                <div class="d-flex align-items-center flex-grow-1">
+                    <i class="ph ph-magnifying-glass fs-3 text-gold me-3"></i>
+                    <input type="text" id="cmd-input" class="cmd-input" placeholder="Ketik perintah atau cari produk (Esc untuk tutup)..." autocomplete="off" />
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <img src="/assets/logo/OT-Logo.webp" alt="OT Mini Logo" class="ot-mini-logo" style="height: 24px; filter: invert(1); opacity: 0.8;" />
+                    <button type="button" id="close-cmd-palette" class="btn btn-link text-muted p-0 border-0">
+                        <i class="ph ph-x fs-4"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-4">
+                <div class="text-muted small fw-semibold mb-3 text-uppercase tracking-wider">Akses Cepat & Navigasi</div>
+                <div class="d-flex flex-column gap-2" id="cmd-shortcuts">
+                    <a href="/" class="cmd-shortcut-item d-flex align-items-center justify-content-between p-3 rounded-4 text-decoration-none">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="cmd-icon-box"><i class="ph ph-house fs-5"></i></div>
+                            <span class="text-main fw-medium">Beranda & Katalog Utama</span>
+                        </div>
+                        <span class="badge bg-dark border border-secondary text-muted small">Go to Home</span>
+                    </a>
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        @if (!User.IsInRole("Admin") && !User.HasClaim(ClaimTypes.Role, "Admin"))
+                        {
+                            <a href="/Checkout" class="cmd-shortcut-item d-flex align-items-center justify-content-between p-3 rounded-4 text-decoration-none">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="cmd-icon-box"><i class="ph ph-shopping-bag fs-5"></i></div>
+                                    <span class="text-main fw-medium">Keranjang & Penyelesaian Transaksi</span>
+                                </div>
+                                <span class="badge bg-dark border border-secondary text-muted small">Go to Cart</span>
+                            </a>
+                        }
+                        @if (User.IsInRole("Admin") || User.HasClaim(ClaimTypes.Role, "Admin"))
+                        {
+                            <a href="/Admin" class="cmd-shortcut-item d-flex align-items-center justify-content-between p-3 rounded-4 text-decoration-none">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="cmd-icon-box"><i class="ph ph-gauge fs-5"></i></div>
+                                    <span class="text-main fw-medium">Dasbor Eksekutif & Statistik</span>
+                                </div>
+                                <span class="badge bg-dark border border-secondary text-muted small">Dashboard</span>
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <a href="/Otentikasi/Masuk" class="cmd-shortcut-item d-flex align-items-center justify-content-between p-3 rounded-4 text-decoration-none">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="cmd-icon-box"><i class="ph ph-sign-in fs-5"></i></div>
+                                <span class="text-main fw-medium">Masuk atau Daftar Akun Baru</span>
+                            </div>
+                            <span class="badge bg-dark border border-secondary text-muted small">Authentication</span>
+                        </a>
+                    }
+                </div>
+                <div id="cmd-product-results" class="d-flex flex-column gap-2 mt-3 pt-3 border-top border-secondary border-opacity-25" style="display: none !important;"></div>
+            </div>
+            <div class="bg-dark px-4 py-3 border-top border-surface d-flex justify-content-between align-items-center small text-muted">
+                <span><kbd class="badge-cmd small">↑↓</kbd> Navigasi</span>
+                <span><kbd class="badge-cmd small">Enter</kbd> Pilih</span>
+                <span><kbd class="badge-cmd small">Esc</kbd> Tutup Modal</span>
+            </div>
+        </div>
+    </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+        <script src="~/js/core-engine.js" asp-append-version="true"></script>
+
+        <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const themeToggle = document.getElementById("themeToggle");
+            const themeIcon = document.getElementById("themeIcon");
+            const brandLogo = document.getElementById("brandLogo");
+            const html = document.documentElement;
+            
+            const savedTheme = localStorage.getItem("ot-theme") || "dark";
+            setTheme(savedTheme);
+
+            if (themeToggle) {
+                themeToggle.addEventListener("click", () => {
+                    const current = html.getAttribute("data-theme");
+                    const next = current === "dark" ? "light" : "dark";
+                    setTheme(next);
+                });
+            }
+
+            function setTheme(theme) {
+                html.setAttribute("data-theme", theme);
+                localStorage.setItem("ot-theme", theme);
+                
+                if (theme === "light") {
+                    themeIcon.classList.replace("ph-moon-stars", "ph-sun");
+                    if (brandLogo) brandLogo.style.filter = "none";
+                } else {
+                    themeIcon.classList.replace("ph-sun", "ph-moon-stars");
+                    if (brandLogo) brandLogo.style.filter = "invert(1)";
+                }
+            }
+        });
+    </script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

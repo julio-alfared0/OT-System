@@ -1,0 +1,177 @@
+@model OT.ViewModels.StrukViewModel
+@{
+    ViewData["Title"] = "Struk Bukti Mahakarya - Warisan 1948";
+}
+
+<div class="struk-wrapper d-flex flex-column align-items-center justify-content-center min-vh-100 py-5" style="background-color: #0D0D12; margin-top: 60px;">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 w-100 mb-4 btn-print" style="max-width: 450px;">
+        <div class="d-flex gap-2">
+            <a asp-controller="Beranda" asp-action="Index" class="btn btn-outline-light rounded-pill px-3 py-2 small d-flex align-items-center gap-1" style="border-color: rgba(255,255,255,0.15);" title="Kembali ke Beranda">
+                <i class="ph ph-house"></i>
+            </a>
+            <a asp-controller="Checkout" asp-action="Riwayat" class="btn btn-outline-light rounded-pill px-3 py-2 small d-flex align-items-center gap-2" style="border-color: rgba(255,255,255,0.15);">
+                <i class="ph ph-receipt"></i> Riwayat Pesanan
+            </a>
+        </div>
+        <button onclick="window.print()" class="btn btn-gold rounded-pill px-4 py-2 small fw-bold d-flex align-items-center gap-2 shadow-sm">
+            <i class="ph ph-printer fs-5"></i> Cetak Struk PDF
+        </button>
+    </div>
+
+    <div class="card-struk bg-surface position-relative" style="width: 100%; max-width: 450px; padding: 40px; border: 1px solid var(--gold, #D4AF37); border-radius: 16px; box-shadow: 0 0 32px rgba(212, 175, 55, 0.2), 0 24px 64px rgba(0, 0, 0, 0.8);">
+        <div class="text-center border-bottom border-secondary border-opacity-25 pb-4 mb-4">
+            <img src="/assets/logo/OT1948.webp" alt="OT 1948 Logo" style="height: 60px; filter: invert(1); margin-bottom: 24px; opacity: 0.95;" />
+            <span class="text-gold fw-bold text-uppercase tracking-wider small d-block mb-1">Bukti Transaksi Sah</span>
+            <h4 class="fw-bolder tracking-tight text-white mb-1">ORANG TUA GROUP 1948</h4>
+            <p class="text-muted small mb-0">Penyulingan Warisan Nusantara Sejak Tahun 1948</p>
+        </div>
+
+        <div class="d-flex flex-column gap-2 mb-4 p-3 rounded-3 bg-dark bg-opacity-75 border border-secondary border-opacity-25 small">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted">Nomor Seri Transaksi</span>
+                <span class="fw-bold text-gold font-monospace tracking-tight">@(Model.Pesanan?.NomorSeriTransaksi ?? "QRIS-OT-LEGEND")</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted">Waktu Penyelesaian</span>
+                <span class="text-white">@(Model.Pesanan?.TanggalPesanan.ToLocalTime().ToString("dd MMMM yyyy, HH:mm") ?? DateTime.Now.ToString("dd MMMM yyyy, HH:mm")) WIB</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted">Metode Pembayaran</span>
+                <span class="badge bg-success bg-opacity-25 text-success rounded-pill px-2 py-1">@(Model.Pesanan?.MetodePembayaran ?? "QRIS Nasional")</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted">Status Keaslian</span>
+                <span class="text-gold fw-semibold d-flex align-items-center gap-1">
+                    <i class="ph ph-seal-check fs-6"></i> 100% Original OT
+                </span>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <h6 class="text-uppercase tracking-wider small text-muted fw-bold mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+                Rincian Mahakarya
+            </h6>
+            @if (Model.Pesanan?.DetailPesanan != null && Model.Pesanan.DetailPesanan.Any())
+            {
+                <div class="d-flex flex-column gap-3">
+                    @foreach (var detail in Model.Pesanan.DetailPesanan)
+                    {
+                        var subtotalDetail = detail.HargaSatuan * detail.Kuantitas;
+                        <div class="d-flex justify-content-between align-items-start text-white small">
+                            <div>
+                                <span class="fw-bold d-block">@(detail.Produk?.NamaProduk ?? "Mahakarya OT 1948")</span>
+                                <span class="text-muted" style="font-size: 0.8rem;">
+                                    @detail.Kuantitas unit &times; @detail.HargaSatuan.ToString("C", new System.Globalization.CultureInfo("id-ID"))
+                                </span>
+                            </div>
+                            <span class="fw-semibold text-end">@subtotalDetail.ToString("C", new System.Globalization.CultureInfo("id-ID"))</span>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-muted small text-center py-2">Rincian item tercatat dalam database sistem.</div>
+            }
+        </div>
+
+        <div class="border-top border-secondary border-opacity-25 pt-3 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
+                <span>Subtotal Pembelian</span>
+                <span>@(Model.Pesanan?.TotalHarga.ToString("C", new System.Globalization.CultureInfo("id-ID")) ?? "Rp 0")</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
+                <span>Pajak & Asuransi Presisi</span>
+                <span class="text-success">Termasuk</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="fw-bold text-white fs-6">TOTAL DIBAYARKAN</span>
+                <span class="fw-bolder fs-4" style="color: var(--gold, #D4AF37);">
+                    @(Model.Pesanan?.TotalHarga.ToString("C", new System.Globalization.CultureInfo("id-ID")) ?? "Rp 0")
+                </span>
+            </div>
+            
+            <div class="p-3 rounded-3 bg-dark border border-warning border-opacity-25 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="ph ph-star-fill text-gold fs-5"></i>
+                    <span class="text-white small fw-medium">Poin Loyalitas Diperoleh</span>
+                </div>
+                <span class="badge rounded-pill bg-gold text-dark fw-bold px-3 py-1">
+                    +@(Model.Pesanan?.PoinDiperoleh ?? 0) Poin
+                </span>
+            </div>
+        </div>
+
+        <div class="text-center mb-4 py-3 border-top border-bottom border-secondary border-opacity-25">
+            <div class="d-flex justify-content-center mb-2 p-2 bg-white rounded-2 shadow-sm mx-auto" style="max-width: 280px;">
+                <svg id="real-struk-barcode" class="w-100" style="max-height: 55px;"></svg>
+            </div>
+            <span class="font-monospace text-muted d-block small tracking-widest" style="font-size: 0.72rem; letter-spacing: 0.15em;">
+                @(Model.Pesanan?.NomorSeriTransaksi ?? "QRIS-889102938475-OT-SAH")
+            </span>
+            <span class="text-success small fw-bold mt-1 d-block">
+                <i class="ph ph-check-circle me-1"></i> QRIS TERVERIFIKASI REAL-TIME
+            </span>
+        </div>
+
+        <div class="text-center pt-2">
+            <p class="mb-2 fst-italic" style="font-family: 'Georgia', serif; color: var(--gold, #D4AF37); font-size: 0.95rem; line-height: 1.6;">
+                "@(!string.IsNullOrEmpty(Model.KutipanLegendarisOT) ? Model.KutipanLegendarisOT : "Kehormatan sejati terletak pada keteguhan menjaga resep leluhur dari masa ke masa.")"
+            </p>
+            <span class="text-muted small d-block" style="font-size: 0.75rem;">
+                Warisan 1948 &copy; @DateTime.Now.Year Orang Tua Group. Semua Hak Dilindungi.
+            </span>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        body {
+            background: white !important;
+            color: black !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .btn-print, 
+        .glass-nav,
+        footer,
+        #command-palette {
+            display: none !important;
+        }
+        .struk-wrapper {
+            background: white !important;
+            min-height: auto !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .card-struk {
+            border: none !important;
+            box-shadow: none !important;
+            filter: invert(1) !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 20px !important;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var barcodeEl = document.getElementById("real-struk-barcode");
+            if (barcodeEl && typeof JsBarcode !== "undefined") {
+                JsBarcode("#real-struk-barcode", "@(Model.Pesanan?.NomorSeriTransaksi ?? "OT1948TX")", {
+                    format: "CODE128",
+                    lineColor: "#000000",
+                    background: "#ffffff",
+                    width: 2,
+                    height: 45,
+                    displayValue: false,
+                    margin: 4
+                });
+            }
+        });
+    </script>
+}

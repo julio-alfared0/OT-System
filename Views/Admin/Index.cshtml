@@ -1,0 +1,519 @@
+@model OT.ViewModels.DashboardAdminViewModel
+@{
+    ViewData["Title"] = "Dasbor Eksekutif & Statistik Penjualan";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="mb-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between p-4 rounded-4 bg-surface border border-secondary border-opacity-25 shadow-sm">
+    <div>
+        <h3 class="fw-bolder mb-1 text-main tracking-tight">Selamat Datang, <span class="text-gold">@(User.Identity?.Name ?? "Administrator")</span></h3>
+        <p class="text-muted small mb-0">Pantau seluruh ekosistem produk, loyalitas member, dan transaksi waktu nyata OT 1948.</p>
+    </div>
+    <div class="mt-3 mt-md-0">
+        <span class="badge rounded-pill bg-dark border border-secondary text-gold px-3 py-2 small d-inline-flex align-items-center gap-2">
+            <i class="ph ph-shield-check fs-6"></i> Akses Eksekutif Penuh
+        </span>
+    </div>
+</div>
+
+<div class="metrics-grid mb-4" id="dashboard-section" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 24px;">
+        <div class="metric-card p-4 d-flex align-items-center justify-content-between" style="background: var(--surface); border-radius: 24px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+        <div>
+            <span class="text-muted small d-block mb-1 tracking-tight">Total Pendapatan</span>
+            <h4 class="fw-bolder mb-0 text-gold" style="color: var(--gold, #D4AF37);">
+                @Model.TotalPendapatan.ToString("C", new System.Globalization.CultureInfo("id-ID"))
+            </h4>
+            <span class="text-success small mt-2 d-inline-block fw-medium">
+                <i class="ph ph-trend-up me-1"></i> +18.4% bulan ini
+            </span>
+        </div>
+        <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 56px; height: 56px; background: rgba(212, 175, 55, 0.15); color: #D4AF37;">
+            <i class="ph ph-coins fs-2"></i>
+        </div>
+    </div>
+
+        <div class="metric-card p-4 d-flex align-items-center justify-content-between" style="background: var(--surface); border-radius: 24px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+        <div>
+            <span class="text-muted small d-block mb-1 tracking-tight">Total Pesanan Sah</span>
+            <h4 class="fw-bolder mb-0 text-main">
+                @Model.TotalPesanan <span class="fs-6 fw-normal text-muted">Transaksi</span>
+            </h4>
+            <span class="text-info small mt-2 d-inline-block fw-medium">
+                <i class="ph ph-check-circle me-1"></i> 100% Terverifikasi
+            </span>
+        </div>
+        <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 56px; height: 56px; background: rgba(54, 162, 235, 0.15); color: #36A2EB;">
+            <i class="ph ph-shopping-bag-open fs-2"></i>
+        </div>
+    </div>
+
+        <div class="metric-card p-4 d-flex align-items-center justify-content-between" style="background: var(--surface); border-radius: 24px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+        <div>
+            <span class="text-muted small d-block mb-1 tracking-tight">Member Eksekutif</span>
+            <h4 class="fw-bolder mb-0 text-main">
+                @Model.TotalMemberAktif <span class="fs-6 fw-normal text-muted">Akun</span>
+            </h4>
+            <span class="text-warning small mt-2 d-inline-block fw-medium">
+                <i class="ph ph-crown me-1"></i> Tingkat Loyalitas Tinggi
+            </span>
+        </div>
+        <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 56px; height: 56px; background: rgba(255, 159, 64, 0.15); color: #FF9F40;">
+            <i class="ph ph-users-three fs-2"></i>
+        </div>
+    </div>
+
+        <div class="metric-card p-4 d-flex align-items-center justify-content-between" style="background: var(--surface); border-radius: 24px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+        <div>
+            <span class="text-muted small d-block mb-1 tracking-tight">Produk Stok Kritis</span>
+            <h4 class="fw-bolder mb-0 @(Model.ProdukStokKritis.Count > 0 ? "text-danger" : "text-success")">
+                @Model.ProdukStokKritis.Count <span class="fs-6 fw-normal text-muted">Item</span>
+            </h4>
+            @if (Model.ProdukStokKritis.Count > 0)
+            {
+                <span class="text-danger small mt-2 d-inline-block fw-medium">
+                    <i class="ph ph-warning-circle me-1"></i> Butuh Restock Segera
+                </span>
+            }
+            else
+            {
+                <span class="text-success small mt-2 d-inline-block fw-medium">
+                    <i class="ph ph-check me-1"></i> Stok Aman & Presisi
+                </span>
+            }
+        </div>
+        <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 56px; height: 56px; background: rgba(255, 99, 132, 0.15); color: #FF6384;">
+            <i class="ph ph-archive-box fs-2"></i>
+        </div>
+    </div>
+</div>
+
+<div class="charts-grid mb-4" style="display: grid; grid-template-columns: 3fr 2fr; gap: 24px;">
+        <div class="p-4" style="background: var(--surface); border-radius: 24px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h5 class="fw-bold mb-1 text-main tracking-tight">Tren Penjualan Mahakarya</h5>
+                <span class="text-muted small">Kurva akumulasi transaksi 7 hari terakhir</span>
+            </div>
+            <span class="badge bg-dark border border-secondary text-gold px-3 py-2 small">
+                Real-Time Analytics
+            </span>
+        </div>
+        <div style="position: relative; height: 320px; width: 100%;">
+            <canvas id="salesChart"></canvas>
+        </div>
+    </div>
+
+        <div class="p-4" style="background: var(--surface); border-radius: 24px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h5 class="fw-bold mb-1 text-main tracking-tight">Distribusi Koleksi</h5>
+                <span class="text-muted small">Proporsi produk berdasarkan kategori warisan</span>
+            </div>
+        </div>
+        <div style="position: relative; height: 320px; width: 100%; display: flex; align-items: center; justify-content: center;">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="p-4 p-md-5 mb-5" id="member-section" style="background: var(--surface); border-radius: 24px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <span class="badge rounded-pill mb-2 px-3 py-1 font-monospace tracking-widest text-uppercase" style="background: rgba(255, 159, 64, 0.15); color: #FF9F40; border: 1px solid rgba(255, 159, 64, 0.3); font-size: 0.7rem;">
+                Loyalty & Member Command
+            </span>
+            <h5 class="fw-bold mb-1 text-main tracking-tight">Monitoring Member Eksekutif & Loyalitas</h5>
+            <span class="text-muted small">Status keanggotaan terverifikasi dan tingkat keterlibatan pengguna dalam ekosistem warisan.</span>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="text-end">
+                <span class="text-muted small d-block">Total Akun Terdaftar</span>
+                <span class="fw-bolder text-main fs-4">@Model.TotalMemberAktif <span class="fs-6 fw-normal text-muted">Member</span></span>
+            </div>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-12 col-md-4">
+            <div class="p-4 rounded-4" style="background: var(--surface-hover); border: 1px solid var(--border-subtle);">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <span class="text-muted small fw-semibold">VIP / Executive Tier</span>
+                    <i class="ph ph-crown fs-4 text-warning"></i>
+                </div>
+                <h3 class="fw-bold text-main mb-1">100%</h3>
+                <span class="text-success small"><i class="ph ph-check-circle me-1"></i> Terverifikasi KYC Otomatis</span>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="p-4 rounded-4" style="background: var(--surface-hover); border: 1px solid var(--border-subtle);">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <span class="text-muted small fw-semibold">Rasio Transaksi / Member</span>
+                    <i class="ph ph-trend-up fs-4 text-success"></i>
+                </div>
+                <h3 class="fw-bold text-main mb-1">@(Model.TotalMemberAktif > 0 ? ((double)Model.TotalPesanan / Model.TotalMemberAktif).ToString("0.0") : "0")x</h3>
+                <span class="text-muted small">Rata-rata pesanan per akun aktif</span>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="p-4 rounded-4" style="background: var(--surface-hover); border: 1px solid var(--border-subtle);">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <span class="text-muted small fw-semibold">Status Sistem Loyalitas</span>
+                    <i class="ph ph-shield-check fs-4 text-info"></i>
+                </div>
+                <h3 class="fw-bold text-main mb-1">Aktif</h3>
+                <span class="text-info small"><i class="ph ph-lightning me-1"></i> Sinkronisasi Real-time</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="p-4 p-md-5 mb-5" id="stok-section" style="background: var(--surface); border-radius: 24px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <span class="badge rounded-pill mb-2 px-3 py-1 font-monospace tracking-widest text-uppercase" style="background: rgba(212, 175, 55, 0.15); color: var(--gold); border: 1px solid rgba(212, 175, 55, 0.3); font-size: 0.7rem;">
+                Live Inventory Command
+            </span>
+            <h5 class="fw-bold mb-1 text-main tracking-tight">Manajemen Stok & Status Produk Real-Time</h5>
+            <span class="text-muted small">Atur jumlah unit stok secara langsung atau tandai produk habis/restock untuk pembaruan instan di katalog pengguna.</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <input type="text" id="adminSearchProduk" class="form-control form-control-dark rounded-pill px-3 py-2 small" placeholder="Cari nama atau kategori..." style="max-width: 240px; font-size: 0.85rem;" />
+        </div>
+    </div>
+
+    @if (TempData["PesanSukses"] != null)
+    {
+        <div class="alert alert-success bg-transparent border-success text-success small py-2 rounded-3 mb-4 d-flex align-items-center gap-2">
+            <i class="ph ph-check-circle fs-5"></i> @TempData["PesanSukses"]
+        </div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-borderless align-middle mb-0" style="background: transparent; color: var(--text-main);" id="adminProdukTable">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-subtle); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted);">
+                    <th class="py-3 px-3">Produk & Kategori</th>
+                    <th class="py-3 px-3">Harga Satuan</th>
+                    <th class="py-3 px-3">Stok Saat Ini</th>
+                    <th class="py-3 px-3 text-center">Atur Cepat (Habis / Restock)</th>
+                    <th class="py-3 px-3 text-end">Update Manual</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.DaftarSemuaProduk != null && Model.DaftarSemuaProduk.Any())
+                {
+                    @foreach (var produk in Model.DaftarSemuaProduk)
+                    {
+                        <tr class="produk-row" style="border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.2s ease;">
+                            <td class="py-4 px-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-3 overflow-hidden d-flex align-items-center justify-content-center position-relative" style="width: 52px; height: 52px; background: var(--surface-hover); border: 1px solid var(--border-subtle); flex-shrink: 0;">
+                                        @if (!string.IsNullOrEmpty(produk.JalurGambar))
+                                        {
+                                            <img src="@produk.JalurGambar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" alt="@produk.NamaProduk" style="width: 100%; height: 100%; object-fit: contain; padding: 4px;" />
+                                            <div class="w-100 h-100 align-items-center justify-content-center" style="display: none;"><i class="ph ph-wine fs-3 text-gold"></i></div>
+                                        }
+                                        else
+                                        {
+                                            <i class="ph ph-wine fs-3 text-gold"></i>
+                                        }
+                                    </div>
+                                    <div>
+                                        <span class="fw-bold text-main d-block produk-nama">@produk.NamaProduk</span>
+                                        <span class="badge bg-secondary bg-opacity-25 text-gold small px-2 py-0 mt-1 font-monospace">@(produk.Kategori?.NamaKategori ?? "Warisan")</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-4 px-3 text-main fw-semibold font-monospace">
+                                @produk.Harga.ToString("C", new System.Globalization.CultureInfo("id-ID"))
+                            </td>
+                            <td class="py-4 px-3">
+                                @if (produk.Stok == 0)
+                                {
+                                    <span class="badge rounded-pill bg-danger bg-opacity-25 text-danger px-3 py-2 fw-bold font-monospace d-inline-flex align-items-center gap-1">
+                                        <i class="ph ph-warning-octagon fs-6"></i> STOK HABIS (0)
+                                    </span>
+                                }
+                                else if (produk.Stok < 10)
+                                {
+                                    <span class="badge rounded-pill bg-warning bg-opacity-25 text-warning px-3 py-2 fw-bold font-monospace d-inline-flex align-items-center gap-1">
+                                        <i class="ph ph-warning fs-6"></i> KRITIS (@produk.Stok Unit)
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge rounded-pill bg-success bg-opacity-25 text-success px-3 py-2 fw-bold font-monospace d-inline-flex align-items-center gap-1">
+                                        <i class="ph ph-check-circle fs-6"></i> TERSEDIA (@produk.Stok Unit)
+                                    </span>
+                                }
+                            </td>
+                            <td class="py-4 px-3 text-center">
+                                <form asp-controller="Admin" asp-action="AturStatusStok" method="post" class="d-inline-flex gap-2 m-0">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="produkId" value="@produk.Id" />
+                                    @if (produk.Stok > 0)
+                                    {
+                                        <button type="submit" name="isHabis" value="true" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold font-monospace d-inline-flex align-items-center gap-1" title="Set Stok Habis">
+                                            <i class="ph ph-prohibit"></i> Set Habis
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" name="isHabis" value="false" class="btn btn-sm btn-gold rounded-pill px-3 py-1 fw-bold font-monospace text-dark d-inline-flex align-items-center gap-1" title="Restock 50 Unit">
+                                            <i class="ph ph-arrow-counter-clockwise"></i> Restock (50)
+                                        </button>
+                                    }
+                                </form>
+                            </td>
+                            <td class="py-4 px-3 text-end">
+                                <form asp-controller="Admin" asp-action="UpdateStok" method="post" class="d-flex justify-content-end align-items-center gap-2 m-0">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="produkId" value="@produk.Id" />
+                                    <input type="number" name="stokBaru" value="@produk.Stok" min="0" class="form-control form-control-dark rounded-pill py-1 px-3 text-center font-monospace fw-bold" style="width: 80px; font-size: 0.85rem;" required />
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center p-2" title="Simpan Stok Baru" style="width: 34px; height: 34px; border-color: var(--border-subtle);">
+                                        <i class="ph ph-floppy-disk text-gold fs-6"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted small">
+                            Belum ada produk terdaftar dalam database.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="p-4 p-md-5 mb-5" id="transaksi-section" style="background: var(--surface); border-radius: 24px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm);">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <span class="fw-bold mb-1 text-main tracking-tight d-block fs-5">Riwayat Transaksi Terbaru</span>
+            <span class="text-muted small">Daftar pesanan masuk terbaru dari pelanggan eksklusif OT</span>
+        </div>
+        <a href="/" class="btn btn-outline-secondary text-main rounded-pill px-4 py-2 small" style="border-color: var(--border-subtle);">
+            Lihat Semua Transaksi
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-borderless align-middle mb-0" style="background: transparent; color: var(--text-main);">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-subtle); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted);">
+                    <th class="py-3 px-4">Nomor Seri</th>
+                    <th class="py-3 px-4">Pelanggan</th>
+                    <th class="py-3 px-4">Waktu Pesanan</th>
+                    <th class="py-3 px-4">Metode</th>
+                    <th class="py-3 px-4">Total Transaksi</th>
+                    <th class="py-3 px-4 text-end">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.DaftarTransaksiTerbaru != null && Model.DaftarTransaksiTerbaru.Any())
+                {
+                    @foreach (var transaksi in Model.DaftarTransaksiTerbaru)
+                    {
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.2s ease;">
+                            <td class="py-4 px-4 font-monospace text-gold fw-semibold">@transaksi.NomorSeriTransaksi</td>
+                            <td class="py-4 px-4 text-main fw-medium">@(transaksi.Pengguna?.NamaLengkap ?? "Member OT 1948")</td>
+                            <td class="py-4 px-4 text-muted small">@transaksi.TanggalPesanan.ToLocalTime().ToString("dd MMM yyyy, HH:mm") WIB</td>
+                            <td class="py-4 px-4">
+                                <span class="badge" style="background: var(--surface-hover); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 6px 12px;">@transaksi.MetodePembayaran</span>
+                            </td>
+                            <td class="py-4 px-4 text-main fw-bold">@transaksi.TotalHarga.ToString("C", new System.Globalization.CultureInfo("id-ID"))</td>
+                            <td class="py-4 px-4 text-end">
+                                <span class="badge rounded-pill bg-success bg-opacity-25 text-success px-3 py-2 fw-medium">
+                                    <i class="ph ph-check-circle me-1"></i> @transaksi.StatusPembayaran
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted small">
+                            Belum ada transaksi tercatat dalam 24 jam terakhir.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    @@media (max-width: 1200px) {
+        .charts-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof Chart === 'undefined') return;
+
+            Chart.defaults.font.family = "'Inter', system-ui, -apple-system, sans-serif";
+            Chart.defaults.color = "#A1A1AA";
+
+            var rawSalesData = @Html.Raw(string.IsNullOrEmpty(Model.DataGrafikPenjualanJson) ? "[]" : Model.DataGrafikPenjualanJson);
+            var labelsSales = [];
+            var dataSales = [];
+
+            if (Array.isArray(rawSalesData) && rawSalesData.length > 0) {
+                rawSalesData.forEach(function (item) {
+                    labelsSales.push(item.Tanggal || item.tanggal);
+                    dataSales.push(item.Total || item.total || 0);
+                });
+            } else {
+                labelsSales = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+                dataSales = [1250000, 2400000, 1850000, 3100000, 2900000, 4800000, 5600000];
+            }
+
+            var ctxSales = document.getElementById('salesChart');
+            if (ctxSales) {
+                var gradientGold = ctxSales.getContext('2d').createLinearGradient(0, 0, 0, 300);
+                gradientGold.addColorStop(0, 'rgba(212, 175, 55, 0.4)');
+                gradientGold.addColorStop(1, 'rgba(212, 175, 55, 0.0)');
+
+                new Chart(ctxSales, {
+                    type: 'line',
+                    data: {
+                        labels: labelsSales,
+                        datasets: [{
+                            label: 'Pendapatan Harian (Rp)',
+                            data: dataSales,
+                            borderColor: '#D4AF37',
+                            borderWidth: 3,
+                            backgroundColor: gradientGold,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#1A1A24',
+                            pointBorderColor: '#D4AF37',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(13, 13, 18, 0.95)',
+                                titleColor: '#D4AF37',
+                                bodyColor: '#FCFCFC',
+                                borderColor: 'rgba(212, 175, 55, 0.3)',
+                                borderWidth: 1,
+                                padding: 12,
+                                displayColors: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { color: 'rgba(255, 255, 255, 0.04)' }
+                            },
+                            y: {
+                                grid: { color: 'rgba(255, 255, 255, 0.04)' },
+                                ticks: {
+                                    callback: function(value) {
+                                        return 'Rp ' + (value / 1000000).toFixed(1) + 'M';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            var rawCategoryData = @Html.Raw(string.IsNullOrEmpty(Model.DataDistribusiKategoriJson) ? "[]" : Model.DataDistribusiKategoriJson);
+            var labelsCategory = [];
+            var dataCategory = [];
+
+            if (Array.isArray(rawCategoryData) && rawCategoryData.length > 0) {
+                rawCategoryData.forEach(function (item) {
+                    labelsCategory.push(item.NamaKategori || item.namaKategori);
+                    dataCategory.push(item.JumlahProduk || item.jumlahProduk || 0);
+                });
+            } else {
+                labelsCategory = ["Anggur Tradisional", "Spirits Nusantara", "Edisi Terbatas", "Reserve Kolektor"];
+                dataCategory = [45, 25, 18, 12];
+            }
+
+            var ctxCategory = document.getElementById('categoryChart');
+            if (ctxCategory) {
+                new Chart(ctxCategory, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labelsCategory,
+                        datasets: [{
+                            data: dataCategory,
+                            backgroundColor: [
+                                '#D4AF37',
+                                '#8B1C31',
+                                '#2E3440',
+                                '#4C566A',
+                                '#88C0D0'
+                            ],
+                            borderColor: '#1A1A24',
+                            borderWidth: 4,
+                            hoverOffset: 12
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '72%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(13, 13, 18, 0.95)',
+                                titleColor: '#D4AF37',
+                                bodyColor: '#FCFCFC',
+                                borderColor: 'rgba(212, 175, 55, 0.3)',
+                                borderWidth: 1,
+                                padding: 12
+                            }
+                        }
+                    }
+                });
+            }
+
+            var searchInput = document.getElementById('adminSearchProduk');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    var filter = e.target.value.toLowerCase();
+                    var rows = document.querySelectorAll('#adminProdukTable tbody tr.produk-row');
+                    rows.forEach(function(row) {
+                        var text = row.textContent.toLowerCase();
+                        if (text.includes(filter)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+}

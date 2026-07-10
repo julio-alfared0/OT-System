@@ -1,0 +1,115 @@
+@model OT.Models.Pesanan
+@{
+    ViewData["Title"] = "Pembayaran QRIS - Warisan 1948";
+}
+
+<div class="container py-5" style="margin-top: 80px;">
+    <div class="row justify-content-center scroll-reveal">
+        <div class="col-lg-6 col-md-8">
+            <div class="mb-4">
+                <a asp-controller="Checkout" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 py-2 small text-main d-inline-flex align-items-center gap-2" style="border-color: var(--border-subtle);">
+                    <i class="ph ph-arrow-left"></i> Kembali ke Keranjang
+                </a>
+            </div>
+
+            <div class="card p-4 p-md-5 border-0 rounded-4 bg-surface shadow-lg text-center" style="border-radius: 24px; border: 1px solid var(--gold-glow) !important;">
+                <div class="mb-3">
+                    <span class="badge rounded-pill bg-dark border border-warning text-gold px-3 py-2 font-monospace small tracking-widest text-uppercase">
+                        <i class="ph ph-qr-code me-1"></i> QRIS INSTANT PAYMENT
+                    </span>
+                </div>
+
+                <h2 class="fw-bolder tracking-tight mb-2 text-main">Pindai Kode QRIS</h2>
+                <p class="text-muted small mb-4">
+                    Gunakan aplikasi m-Banking atau dompet digital (BCA, Mandiri, OVO, GoPay, DANA) untuk menyelesaikan transaksi mahakarya Anda.
+                </p>
+
+                <div class="p-4 rounded-4 bg-dark border border-secondary border-opacity-25 mb-4 d-flex flex-column gap-2">
+                    <span class="text-muted small">Total Yang Harus Dibayarkan</span>
+                    <h3 class="fw-bolder mb-1" style="color: var(--gold, #D4AF37); font-size: 2rem;">
+                        @Model.TotalHarga.ToString("C", new System.Globalization.CultureInfo("id-ID"))
+                    </h3>
+                    <div class="d-flex align-items-center justify-content-center gap-2 text-warning small mt-1">
+                        <i class="ph ph-timer fs-5"></i>
+                        <span>Selesaikan pembayaran dalam <strong id="qris-timer" class="font-monospace text-white">15:00</strong></span>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-4 bg-white d-inline-block mx-auto mb-4 shadow" style="border: 2px solid #E5E7EB;">
+                    <div id="qris-barcode-canvas" class="d-flex justify-content-center align-items-center mb-3"></div>
+                    <span class="font-monospace text-dark fw-bold d-block" style="font-size: 0.85rem; letter-spacing: 0.05em;">
+                        ID: @Model.NomorSeriTransaksi
+                    </span>
+                </div>
+
+                <div class="mb-4 text-start p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-25 small">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Nomor Seri</span>
+                        <span class="font-monospace text-gold fw-bold">@Model.NomorSeriTransaksi</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Status Transaksi</span>
+                        <span class="badge bg-warning bg-opacity-25 text-warning rounded-pill">@Model.StatusPembayaran</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Poin Kehormatan</span>
+                        <span class="text-success fw-bold">+@Model.PoinDiperoleh Poin (Didapat setelah lunas)</span>
+                    </div>
+                </div>
+
+                <form method="post" asp-action="KonfirmasiQris" asp-controller="Checkout">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="pesananId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-gold w-100 py-3 rounded-pill fw-bold text-uppercase tracking-wider shadow-lg d-flex align-items-center justify-content-center gap-2" style="border-radius: 14px !important; font-size: 1.05rem;">
+                        <i class="ph ph-check-circle fs-4"></i>
+                        <span>Konfirmasi Pembayaran Berhasil</span>
+                    </button>
+                </form>
+
+                <div class="text-center mt-3 small text-muted">
+                    Klik tombol di atas untuk menyimulasikan sistem mendeteksi pembayaran QRIS Anda secara real-time.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var qrisText = "QRIS.PT.WARISAN.ORANG.TUA.1948|TXID:@Model.NomorSeriTransaksi|TOTAL:@Model.TotalHarga.ToString("N0")";
+            var qrContainer = document.getElementById("qris-barcode-canvas");
+            if (qrContainer && typeof QRCode !== "undefined") {
+                qrContainer.innerHTML = "";
+                new QRCode(qrContainer, {
+                    text: qrisText,
+                    width: 200,
+                    height: 200,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }
+
+            var duration = 15 * 60;
+            var display = $('#qris-timer');
+            
+            var timer = setInterval(function() {
+                var minutes = parseInt(duration / 60, 10);
+                var seconds = parseInt(duration % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.text(minutes + ":" + seconds);
+
+                if (--duration < 0) {
+                    clearInterval(timer);
+                    display.text("EXPIRED");
+                    display.removeClass('text-white').addClass('text-danger');
+                }
+            }, 1000);
+        });
+    </script>
+}
