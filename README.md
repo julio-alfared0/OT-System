@@ -2,7 +2,7 @@
 # NIM : 2457201018
 # Kelas : SI4M
 # Mata Kuliah : Pemrograman Beroriestasi Object
-# Member project : budisandif@gmail.com
+# Member project : budisandif@gmail.com budisandif@gmail.com
 
 
 
